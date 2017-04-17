@@ -1,47 +1,40 @@
 package demo;
 
-import java.security.SecureRandom;
-import java.util.ArrayList;
-
-import demo.ValidateJob;
-import demo.CockpitClient;
+import java.io.IOException;
+import java.util.UUID;
 
 public class Main {
-	public static final int VALIDATE_JOB_NUM = 4;
-	public static final int CLIENT_NUM = 10;
+	public static void start() throws IOException{
+		// Register Instance
+		String instanceID = UUID.randomUUID().toString();
+		int rtval = Util.registerInstance(instanceID);
+		if (rtval == -1){
+			System.exit(-1);
+		}
 
-	public static final long MAX_CLIENT_ID = 92233736854775807L;
-	public static final long MIN_CLIENT_ID = 1L;
-	
-	public static ArrayList<Package> unvalidatedQueue =
-	        new ArrayList<Package>();
-	
-	public static void main(String args[]) throws InterruptedException{
-		
-		// Generate Client
-		Thread clients[] = new Thread[CLIENT_NUM];
-		SecureRandom ranGen = new SecureRandom();
-		
-		for(int i=0; i<CLIENT_NUM; i++){
-			long clientId = (long)((ranGen.nextDouble()
-                     * (MAX_CLIENT_ID - MIN_CLIENT_ID)) + MIN_CLIENT_ID);
-			clients[i] = new CockpitClient(clientId, unvalidatedQueue);
-			clients[i].setDaemon(true);
-			clients[i].start();
+		// Generate HeartbeatThread
+		HeartbeatThread heartbeatThread = new HeartbeatThread(instanceID);
+		heartbeatThread.setDaemon(true);
+		heartbeatThread.start();
+
+		// Generate ValidateThread
+		Thread validateThread = new ValidationThread(instanceID);
+		validateThread.setDaemon(true);
+		validateThread.start();
+		while(true){
+			if (heartbeatThread.isAlive() && validateThread.isAlive()){
+				try {
+					Thread.sleep(1000);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+				continue;
+			}
+			System.exit(-1);
 		}
-		Thread.sleep(2000);
-		
-		// Generate validateJob
-		Thread jobs[] = new Thread[VALIDATE_JOB_NUM];
-		
-		for(int i=0; i<VALIDATE_JOB_NUM; i++){
-			int jobId = i;
-			jobs[i] = new ValidateJob(jobId, unvalidatedQueue);
-			jobs[i].setDaemon(true);
-			jobs[i].start();
-			Thread.sleep(500);
-		}
-		
-		Thread.sleep(2000);
+	}
+
+	public static void main(String args[]) throws IOException{
+		Main.start();
 	}
 }

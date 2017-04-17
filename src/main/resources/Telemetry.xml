@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">  
+<mapper namespace="demo.db.TelemetryDAO"> 
+	<resultMap type="Packet" id="packetResultMap">  
+    	<id property="tranmissionID" column="TRANMISSION_ID" />  
+    	<result property="submissionContent" column="SUBMISSION_CONTENT" />  
+	</resultMap>
+	
+	<insert id="insertPacket" parameterType="demo.model.Packet">
+        insert into TELEMETRY(TRANMISSION_ID,STATUS,SUBMISSION_CONTENT) values(#{tranmissionID},#{submissionContent})
+    </insert>
+    
+</mapper>  

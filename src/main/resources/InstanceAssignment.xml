@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">  
+<mapper namespace="demo.db.InstanceAssigmentDAO"> 
+
+	<resultMap type="InstanceAssignment" id="InstanceAssignmentResultMap">  
+    	<id property="clientID" column="CLIENT_ID" />  
+    	<result property="instanceID" column="INSTANCE_ID" />  
+   	 	<result property="status" column="STATUS" />  
+	</resultMap> 
+	
+	<insert id="insertInstanceAssigment" parameterType="demo.model.InstanceAssignment">
+        insert into INSTANCEASSIGMENT(CLIENT_ID,INSTANCE_ID,STATUS) values(#{clientID},#{instanceID},#{status})
+    </insert>
+	
+	<update id="updateInstanceAssignment" parameterType="demo.model.InstanceAssignment">
+        update INSTANCEASSIGMENT set CLIENT_ID=#{clientID},INSTANCE_ID=#{instanceID},STATUS=#{status} where CLIENT_ID=#{clientID}
+    </update>
+    
+    <update id="resetInstanceAssignmentByInstanceID" parameterType="String">
+        update INSTANCEASSIGMENT set INSTANCE_ID='',STATUS='PENDING' where INSTANCE_ID=#{instanceID}
+    </update>
+    
+    <update id="resetFininshedInstanceAssignment">
+        update INSTANCEASSIGMENT set INSTANCE_ID='',STATUS='PENDING' where STATUS='FINISHED'
+    </update>
+    
+    <select id="getInstanceAssignmentsByInstanceID" resultMap="InstanceAssignmentResultMap">
+        select * from INSTANCEASSIGMENT where INSTANCE_ID=#{instanceID}
+    </select>
+    
+    <select id="getPendingInstanceAssignment" resultMap="InstanceAssignmentResultMap">
+        select * from INSTANCEASSIGMENT where STATUS='PENDING' limit 1
+    </select>
+    
+    <select id="getInstanceAssignmentsCount" resultType="Integer">
+        select count(*) from INSTANCEASSIGMENT
+    </select>
+    
+</mapper>  

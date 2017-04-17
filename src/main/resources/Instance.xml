@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">  
+<mapper namespace="demo.db.InstanceDAO"> 
+
+	<resultMap type="Instance" id="instanceResultMap">  
+    	<id property="instanceID" column="INSTANCE_ID" />  
+    	<result property="status" column="STATUS" />  
+   	 	<result property="lastHeartbeat" column="LAST_HEARTBEAT" />  
+	</resultMap>  
+
+	<insert id="insertInstance" parameterType="demo.model.Instance">
+        insert into INSTANCE(INSTANCE_ID,STATUS,LAST_HEARTBEAT) values(#{instanceID},#{status},#{lastHeartbeat})
+    </insert>
+    
+    <update id="updateInstanceStatus" parameterType="demo.model.Instance">
+        update INSTANCE set INSTANCE_ID=#{instanceID},STATUS=#{status},LAST_HEARTBEAT=#{lastHeartbeat} where INSTANCE_ID=#{instanceID}
+    </update>
+    
+    <delete id="deleteInstance" parameterType="String">
+        delete from INSTANCE where INSTANCE_ID=#{instanceID}
+    </delete>
+    
+    <select id="getInstance" parameterType="String" resultMap="instanceResultMap">
+        select * from INSTANCE where INSTANCE_ID=#{instanceID}
+    </select>
+    
+    <select id="getAllInstances" resultMap="instanceResultMap" >
+        select * from INSTANCE
+    </select>
+    
+</mapper>  
